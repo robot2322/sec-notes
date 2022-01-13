@@ -6,7 +6,7 @@
 
 ## 0x02 XSS漏洞检测
 
-### 2.1 Bypass
+### 2.1 Payload
 
 | 标签     | 测试脚本                                                     |
 | -------- | ------------------------------------------------------------ |
@@ -52,7 +52,7 @@
 
 ### 3.1 服务端过滤
 
-- Java：https://owasp.org/www-project-java-html-sanitizer/‘
+- Java：https://owasp.org/www-project-java-html-sanitizer/
 - .NET：https://github.com/mganss/HtmlSanitizer
 - Golang：https://github.com/microcosm-cc/bluemonday
 - PHP：http://htmlpurifier.org/
@@ -60,3 +60,33 @@
 - Django框架（Python）：https://github.com/shaowenchen/django-xss-cleaner
 
 ### 3.2 前端过滤
+
+```
+$.ajax({
+      url:'/test.php',
+        type:'post',
+        dataType:'text',
+        cache:false,
+        async:false,
+      })
+      .done(function(data){
+        $("body").append(xssCheck(data));
+      })
+      
+function xssCheck(str,reg){
+  return str ? str.replace(reg ||/[&<">'](?:(amp|lt|quot|gt|#39|nbsp|#d+);)?/g,function (a, b) {
+    if(b){
+      return a;
+    }else{
+      return{
+        '<':'&lt;',
+        '&':'&amp;',
+        '"':'&quot;',
+        '>':'&gt;',
+        "'":''',
+      }[a]
+    }
+  }): '';
+}
+```
+

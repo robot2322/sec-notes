@@ -1,4 +1,4 @@
-## 0x01 静态分析
+## 1、静态分析
 
 ### 1.1 F5反编译
 
@@ -28,7 +28,7 @@ int __cdecl main()
 scanf_addr+ppr+%s地址+bss段基址+system_addr+exit_addr+bss段基址
 ```
 
-## 0x02 编写EXP
+## 2、编写EXP
 
 ### 2.1 查找函数地址
 
